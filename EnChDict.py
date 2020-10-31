@@ -114,7 +114,7 @@ class EnChDict:
                     v = result[k]
                 else:
                     if k == "tts":
-                        v = self.addGoogleTTS(word, tts_dir)
+                        v = "[sound:%s]"%self.addGoogleTTS(word, tts_dir)
                     else:
                         v = ""
                 v = v.replace("\t", "    ")
