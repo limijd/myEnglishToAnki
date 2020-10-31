@@ -7,11 +7,15 @@ import sqlite3
 import logging
 import string
 from contextlib import closing
+from TTSService import *
 
 class EnChDict:
     def __init__(self, stardict_db):
         self.stardict_db = stardict_db
+        self.google_tts = None
 
+    def EnableGoogleTTS(self):
+        self.google_tts = GoogleTTS(TTS_CONFIG)
 
     def lookup_stardict_sql(self, words):
         num_words = len(words)
@@ -89,12 +93,30 @@ class EnChDict:
         return "<br>".join(result)
 
 
-    def result_to_anki(self, results, keys):
+    def addGoogleTTS(self, content, tts_dir):
+        if not self.google_tts:
+            return ""
+        if content.find("\n")>=0: 
+            return ""
+
+        fn = "%s.mp3"%content
+        fn_path = "%s/%s"%(tts_dir, fn)
+        if not os.path.exists(fn_path):
+            self.google_tts.synthesize_english_text_py2(content, fn_path)
+        return fn
+
+    def result_to_anki(self, results, keys, tts_dir):
         cards = []
         for word, result in results.items():
             values = []
             for k in keys:
-                v = result[k]
+                if k in result:
+                    v = result[k]
+                else:
+                    if k == "tts":
+                        v = self.addGoogleTTS(word, tts_dir)
+                    else:
+                        v = ""
                 v = v.replace("\t", "    ")
                 v = v.replace("\n", "<br>")
                 v = v.replace("\\n", "<br>")
