@@ -34,6 +34,10 @@ def PostBack():
         assert 0;
     redirect(request.postFromPath)
 
+@route('/web_download/<filename:path>')
+def send_static(filename):
+        return static_file(filename, root='%s/web_download/'%SCRIPT_PATH)
+
 @route('/hello/<name>')
 def index(name):
     return template('<b>Hello {{name}}</b>!', name=name)
@@ -56,27 +60,29 @@ def english_to_anki_post():
         dateTimeObj = datetime.datetime.now()
         timestamp = dateTimeObj.strftime("%Y%m%d_%H%M%S%f")
         name = "anki_import.%s.txt"%timestamp
-        tarname = "anki_import.%s.tar"%timestamp
+        tarname = "anki_import.%s.tar.gz"%timestamp
         fn = "%s/web_download/%s"%(SCRIPT_PATH,name)
 
         with open(fn, "w") as fp:
             for k in eta.anki_cards:
-
                 fp.write(k.encode("utf-8"))
                 fp.write("\n")
 
+        eta.generated_mp3 = 0
         tarfn = "%s/web_download/%s"%(SCRIPT_PATH,tarname)
         cwd = os.getcwd()
-        tarhandle = tarfile.open(tarfn, "w")
+        tarhandle = tarfile.open(tarfn, "w:gz")
         for word in eta.all_words.keys():
             mp3 = "web_tts/%s.mp3"%word
             if os.path.exists(mp3):
+                eta.generated_mp3 = eta.generated_mp3 + 1
                 tarhandle.add(mp3)
         os.chdir("web_download")
         tarhandle.add(name)
         tarhandle.close()
         os.chdir(cwd)
 
+        eta.tarball_size = os.path.getsize(tarfn)
         request.anki_import_filepath = tarfn
         request.anki_import_filename = tarname
     else:
