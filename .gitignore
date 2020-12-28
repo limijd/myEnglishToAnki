@@ -130,3 +130,7 @@ dmypy.json
 
 anki.english.import.txt
 .tags
+
+web_download/*
+web_tts/*
+

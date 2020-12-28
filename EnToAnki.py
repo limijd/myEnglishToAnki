@@ -52,8 +52,10 @@ class EnglishToAnki:
             self.all_words[k] = result[k]
             self.import_words[k] = result[k]
 
-    def genAnkiCards(self):
-        anki_cards = self.en_ch_dict.result_to_anki(self.import_words, ANKI_ENGLISH_NOTE_FIELDS, self.getAnkiTTSDir())
+    def genAnkiCards(self, tts_dir=None):
+        if not tts_dir:
+            tts_dir = self.getAnkiTTSDir()
+        anki_cards = self.en_ch_dict.result_to_anki(self.import_words, ANKI_ENGLISH_NOTE_FIELDS, tts_dir)
         return anki_cards
 
     def writeAnkiImportFile(self):

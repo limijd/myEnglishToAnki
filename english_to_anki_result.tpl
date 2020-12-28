@@ -1,8 +1,7 @@
 <html>
 <body>
-% for card in eta.anki_cards:
-{{card}}<br>
-% end
+
+{{request.anki_import_filename}}
 
 </body>
 </html>

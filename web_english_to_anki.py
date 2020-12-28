@@ -9,6 +9,8 @@ import re
 import json
 import argparse
 import logging
+import datetime
+import tarfile
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 
@@ -44,10 +46,42 @@ def main():
 @route('/english_to_anki_post', method='POST')
 def english_to_anki_post():
     eta = EnglishToAnki()
+    eta.en_ch_dict.EnableGoogleTTS()
     request.inpEnglishContent = request.POST.get("inpEnglishContent")
     eta.processTextList([request.inpEnglishContent])
     eta.lookup_startdict()
-    eta.anki_cards = eta.genAnkiCards()
+    tts_dir = "%s/web_tts/"%SCRIPT_PATH
+    eta.anki_cards = eta.genAnkiCards(tts_dir)
+    if len(eta.anki_cards) > 0:
+        dateTimeObj = datetime.datetime.now()
+        timestamp = dateTimeObj.strftime("%Y%m%d_%H%M%S%f")
+        name = "anki_import.%s.txt"%timestamp
+        tarname = "anki_import.%s.tar"%timestamp
+        fn = "%s/web_download/%s"%(SCRIPT_PATH,name)
+
+        with open(fn, "w") as fp:
+            for k in eta.anki_cards:
+
+                fp.write(k.encode("utf-8"))
+                fp.write("\n")
+
+        tarfn = "%s/web_download/%s"%(SCRIPT_PATH,tarname)
+        cwd = os.getcwd()
+        tarhandle = tarfile.open(tarfn, "w")
+        for word in eta.all_words.keys():
+            mp3 = "web_tts/%s.mp3"%word
+            if os.path.exists(mp3):
+                tarhandle.add(mp3)
+        os.chdir("web_download")
+        tarhandle.add(name)
+        tarhandle.close()
+        os.chdir(cwd)
+
+        request.anki_import_filepath = tarfn
+        request.anki_import_filename = tarname
+    else:
+        request.anki_import_filepath = None
+        request.anki_import_filename = None
     return template('english_to_anki_result.tpl', request=request, eta=eta)
 
 @route('/english_to_anki', method='GET')
