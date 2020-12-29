@@ -79,7 +79,7 @@ def english_to_anki_post():
             if os.path.exists(mp3):
                 eta.generated_mp3 = eta.generated_mp3 + 1
                 tarhandle.add(mp3)
-        os.chdir("web_download")
+        os.chdir("%s/web_download"%SCRIPT_PATH)
         tarhandle.add(name)
         tarhandle.close()
         os.chdir(cwd)
@@ -97,4 +97,4 @@ def english_to_anki():
     eta = EnglishToAnki()
     return template('english_to_anki.tpl', request=request, eta=eta)
 
-run(host='localhost', port=8080)
+run(host='0.0.0.0', port=8080)
