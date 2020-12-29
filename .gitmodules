@@ -4,6 +4,3 @@
 [submodule "ankicmd"]
 	path = ankicmd
 	url = https://github.com/limijd/ankicmd.git
-[submodule "myDictDB"]
-	path = myDictDB
-	url = /Users/wli/Dropbox/git.repository/myDictDB/
