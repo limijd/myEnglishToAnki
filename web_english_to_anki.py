@@ -97,4 +97,6 @@ def english_to_anki():
     eta = EnglishToAnki()
     return template('english_to_anki.tpl', request=request, eta=eta)
 
+#please comment below run() if app is runing under wsgi
 run(host='0.0.0.0', port=8080)
+
