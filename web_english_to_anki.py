@@ -17,6 +17,8 @@ SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 from EnChDict import EnChDict
 from EnToAnki import EnglishToAnki
 
+test_eta = EnglishToAnki()
+
 @hook('before_request')
 def setup_request():
     approot = url("/")

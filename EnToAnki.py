@@ -10,12 +10,14 @@ import html2text
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 from EnChDict import EnChDict
-ecdict_db = "%s/myDictDB/ecdict.sqlite.db" % SCRIPT_PATH
-stardict_db = "%s/myDictDB/stardict.sqlite.db" % SCRIPT_PATH
+stardict_db = "%s/stardict.sqlite.db" % SCRIPT_PATH
 ANKI_ENGLISH_NOTE_FIELDS = ["word", "phonetic", "definition", "translation", "exchange", "detail", "bnc", "frq", "tts"]
 
 class EnglishToAnki:
     def __init__(self, args=None):
+        if not os.path.exists(stardict_db):
+            print("%s doesn't exist, please decompress/copy the dictionary."%stardict_db)
+            sys.exit(1)
         self.en_ch_dict = EnChDict(stardict_db)
         if args and args.enable_google_tts:
             self.en_ch_dict.EnableGoogleTTS()
