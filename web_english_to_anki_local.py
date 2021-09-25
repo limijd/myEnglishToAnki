@@ -105,4 +105,4 @@ def english_to_anki():
     eta = EnglishToAnki()
     return template('english_to_anki.tpl', request=request, eta=eta)
 
-#run(host='localhost', port=8080)
+run(host='0.0.0.0', port=8080)

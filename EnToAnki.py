@@ -41,13 +41,24 @@ class EnglishToAnki:
 
     def processTextList(self, textList):
         for text in textList:
-            for w in re.findall(r'[a-zA-Z]+', text):
-                if len(w) > 1:
+            lines = text.split("\n")
+            for line in lines:
+                line=line.strip()
+                #print("process line: %s"%line)
+                if line[0] == '"' and line[-1] == '"' and len(line)>2:
+                    w = line[1:-1]
+                    w = w.lower()
                     self.all_words[w] = None
+                    continue
+                for w in re.findall(r'[a-zA-Z]+', line):
+                    if len(w) > 1:
+                        w = w.lower()
+                        self.all_words[w] = None
         return
 
     def lookup_startdict(self):
         words = list(self.all_words.keys())
+        #print("Looking up: %s"% ",".join(words))
         result, failed_list = self.en_ch_dict.lookup_stardict_sql(words)
 
         for k in result:
